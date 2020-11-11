@@ -1,0 +1,24 @@
+.productbox{
+    display: flex;
+    
+}
+
+.notdisplayed  {
+    display: none;
+}
+.toggle-info{
+    position: relative;
+} 
+.toggle-bg{
+    background-color: #fff;
+    opacity: 0;
+}
+.displayed{
+    display: flex;
+    height: auto;
+    width: auto;
+    margin-left: 30%;
+    margin-top: -30%;
+    position: relative;
+}
+  
