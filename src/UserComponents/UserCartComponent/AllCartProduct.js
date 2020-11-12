@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { CartContext } from '../../App';
+import { useHistory } from 'react-router-dom';
+import { CartContext, UserContext } from '../../App';
 import { addToDatabaseCart, getDatabaseCart, removeFromDatabaseCart } from '../../DatabaseManager/DatabaseManager';
 import { getCartSummary, processPromoCode, updateCartContext } from '../../DatabaseManager/PriceCalculation';
 import CheckOut from '../CheckOut/CheckOut';
@@ -8,12 +9,20 @@ import SingleCartProduct from './SingleCartProduct';
 
 const AllCartProduct = () => {
 
+    const history = useHistory();
     const [cartList, setCartList] = useState(getDatabaseCart())
     const [allCartItems, setAllCartItems] = useContext(CartContext);
+    const [loggedInUser, setLoggedInUser] = useContext(UserContext);
 
+    const [cartCheckout, setCartCheckout] = useState({});
     const [promoCode, setPromoCode] = useState('');
     const [promoWarning, setPromoWarning] = useState('');
-    const [promoDiscount, setPromoDiscount] = useState(null);
+    const [promoDiscount, setPromoDiscount] = useState({
+        discount: 0,
+        shippingCharge: 0,
+        subTotal: 0,
+        totalPayable: 0
+    });
 
     const [priceSummary, setPriceSummary] = useState({
         discount: 0,
@@ -61,39 +70,44 @@ const AllCartProduct = () => {
         })
         // console.log(newObj, getDatabaseCart())
         setCartList(newObj)
-        setAllCartItems(updateCartContext);
+        setAllCartItems(updateCartContext());
         // calculateTotal(newObj);
         calculateCartSummary(newObj);
     }
     const removeItem = (key) => { // -------------- remove item from cart
         removeFromDatabaseCart(key);
-        setAllCartItems(updateCartContext);
+        setAllCartItems(updateCartContext());
         setState(!state);
     }
 
-    const calculateCartSummary = (cartList) => {
-        console.log(getCartSummary(cartList));
+    const calculateCartSummary = (cartList) => { // ------------ calculate cart summary
+        // console.log(getCartSummary(cartList));
         setPriceSummary(getCartSummary(cartList));
+        makeCartForCheckout();
     }
-    const handlePromoSubmit = (e) => {
 
-        fetch('http://localhost:3001/getAllPromo')
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                const theCodeFound = data.find(each => each.promoCodeName === promoCode)
-                console.log(theCodeFound);
-                if (theCodeFound) {
-                    const updatePriceSummary = processPromoCode(priceSummary, theCodeFound)
-                    // console.log(updatePriceSummary);
-                    setPromoDiscount(updatePriceSummary)
-                    setPromoWarning('')
-                } else {
-                    setPromoWarning('Code Invalid!')
-                    setPromoDiscount({});
-                }
-            })
-
+    const handlePromoSubmit = (e) => { // ------------------ handle promo submit
+        if (loggedInUser.phone) {
+            fetch('http://localhost:3001/getAllPromo')
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    const theCodeFound = data.find(each => each.promoCodeName === promoCode)
+                    // console.log(theCodeFound);
+                    if (theCodeFound) {
+                        const updatePriceSummary = processPromoCode(priceSummary, theCodeFound)
+                        // console.log("promo", updatePriceSummary);
+                        setPromoDiscount(updatePriceSummary)
+                        makeCartForCheckout();
+                        setPromoWarning('')
+                    } else {
+                        setPromoWarning('Code Invalid!')
+                        setPromoDiscount({});
+                    }
+                })
+        } else {
+            history.push('/login')
+        }
         e.preventDefault()
     }
     const handleInputPromo = (e) => {
@@ -103,6 +117,21 @@ const AllCartProduct = () => {
             console.log(code);
             setPromoCode(code);
         }
+    }
+    
+    useEffect(() => {
+        makeCartForCheckout();
+    }, [priceSummary, promoDiscount])
+
+
+    const makeCartForCheckout = () => { //---------------makeCartForCheckout
+        let totalPrice = 0; 
+        if (priceSummary.totalPayable > 0) { totalPrice = priceSummary.totalPayable }
+        if (promoDiscount.payable > 0) { totalPrice = promoDiscount.payable };
+        let orderNumber = loggedInUser.phone;
+        let cartObj = { totalPrice, orderNumber, status: 'Pending' }
+        setCartCheckout(cartObj)
+        console.log(cartObj);
     }
     return (
         <div>
@@ -133,7 +162,7 @@ const AllCartProduct = () => {
                             {
                                 cartList.length > 0
                                 &&
-                                <CheckOut />
+                                <CheckOut checkoutData={cartCheckout} />
                             }
                         </div>
                     </div>
@@ -146,24 +175,24 @@ const AllCartProduct = () => {
                                 <hr />
                                 <div className="d-flex justify-content-between">
                                     <span>Subtotal (<span>{allCartItems.length}</span> items)</span>
-                                    <span>{priceSummary.subTotal}</span>
+                                    <span>৳ {priceSummary.subTotal}</span>
                                 </div>
                                 <div className="d-flex justify-content-between">
                                     <span>Discount  </span>
-                                    <span>{priceSummary.discount}</span>
+                                    <span>৳ {priceSummary.discount}</span>
                                 </div>
                                 <div className="d-flex justify-content-between">
                                     <span>Shipping Charge</span>
-                                    <span>{priceSummary.shippingCharge}</span>
+                                    <span>৳ {priceSummary.shippingCharge}</span>
                                 </div>
                                 <div className="d-flex justify-content-between">
                                     <span>Wallet Debit</span>
-                                    <span>0</span>
+                                    <span>৳ 0</span>
                                 </div>
                                 <hr />
                                 <form onSubmit={handlePromoSubmit}>
                                     <input name="promo" onChange={handleInputPromo} type="text" className="form-control-sm" placeholder="Promo Code" style={{ textTransform: 'uppercase' }} />
-                                    <button type="submit">Submit</button>
+                                    <button type="submit" style={{ backgroundColor:'white'}}>Submit</button>
                                 </form>
                                 <br />
                                 {
@@ -176,9 +205,11 @@ const AllCartProduct = () => {
                                 {
                                     promoDiscount.discount > 0
                                     &&
+                                    allCartItems.length > 0
+                                    &&
                                     <div className="d-flex justify-content-between">
-                                        <span>Total Payable</span>
-                                        <span>{promoDiscount.discount}</span>
+                                        <span>Promo Discount</span>
+                                        <span>৳ {promoDiscount.discount}</span>
                                     </div>
                                 }
                                 {
@@ -186,25 +217,22 @@ const AllCartProduct = () => {
                                     &&
                                     <div className="d-flex justify-content-between">
                                         <span>Total Payable</span>
-                                        <span>{promoDiscount.expired}</span>
+                                        <span>  {promoDiscount.expired}</span>
                                     </div>
                                 }
                                 {
-                                    promoDiscount.payable > 0
+                                    promoDiscount.payable > 0 && allCartItems.length > 0
                                         ?
                                         <div className="d-flex justify-content-between">
                                             <span>Total Payable</span>
-                                            <span>{promoDiscount.payable}</span>
+                                            <span>৳ {promoDiscount.payable}</span>
                                         </div>
                                         :
                                         <div className="d-flex justify-content-between">
                                             <span>Total Payable</span>
-                                            <span>{priceSummary.totalPayable}</span>
+                                            <span>৳ {priceSummary.totalPayable}</span>
                                         </div>
                                 }
-
-
-
                             </div>
                         </div>
                     </div>

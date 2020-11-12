@@ -3,9 +3,12 @@ import { useForm } from "react-hook-form";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
-
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 const AddPromo = () => {
+
+    const notify = () => toast("New Promo Code Added Successfully");
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [promoActive, setPromoActive] = useState(false)
@@ -25,7 +28,7 @@ const AddPromo = () => {
     const onSubmit = data => {
         let codeName = data.promoCodeName
         data.promoCodeName = codeName.toUpperCase();
-        const codeInfo = { ...data, promoActive: promoActive, startDate, endDate, createdAt: new Date(), usages:0 }
+        const codeInfo = { ...data, promoActive: promoActive, startDate, endDate, createdAt: new Date(), usages: 0 }
 
         if (codeInfo) {
             console.log(codeInfo)
@@ -41,7 +44,8 @@ const AddPromo = () => {
                 .then(res => res.json())
                 .then(data => {
                     if (data) {
-                        window.alert("Code added successfully!")
+                        // window.alert("Code added successfully!")
+                        notify();
                     } else {
                         window.alert("This Code already added!")
                     }
@@ -53,11 +57,23 @@ const AddPromo = () => {
     return (
 
         <div>
-            <div className="center my-5 scroll-able">
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={true}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+            <div className="my-5 scroll-able form-bg p-3" style={{ marginLeft: '35%', maxWidth: '300px' }}>
+                <h3 className="text-center">Add New Promo Code</h3>
                 < form onSubmit={handleSubmit(onSubmit)} >
-                    <div style={{ marginTop: '100px' }}>
+                    <div >
                         <label>Promo code</label><br />
-                        < input name="promoCodeName" style={{ textTransform: "uppercase" }} type="text" className="form-control-lg" ref={register({ required: true })} required />
+                        < input name="promoCodeName" style={{ textTransform: "uppercase" }} type="text" className="form-control-sm" ref={register({ required: true })} required />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div>
@@ -82,12 +98,12 @@ const AddPromo = () => {
                     </div>
                     <div>
                         <label>Discount Rate in %</label><br />
-                        < input name="promoDiscount" type="number" className="form-control-lg" defaultValue="5" ref={register({ required: false })} required/>
+                        < input name="promoDiscount" type="number" className="form-control-sm" defaultValue="0" ref={register({ required: false })} required />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div>
                         <label>Use Time</label><br />
-                        < input name="useTime" type="number" className="form-control-lg" defaultValue="2" ref={register({ required: false })} required/>
+                        < input name="useTime" type="number" className="form-control-sm" defaultValue="0" ref={register({ required: false })} required />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div >
@@ -100,7 +116,7 @@ const AddPromo = () => {
                     </div>
 
                     <br />
-                    <button type="submit">Add Promo Code</button>
+                    <button type="submit" className="btn-yellow">Add Promo Code</button>
                 </form >
             </div>
         </div>

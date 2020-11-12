@@ -11,22 +11,26 @@ const DisplayProducts = () => {
         fetch(`http://localhost:3001/getAllProduct`)
             .then(res => res.json())
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 setAllProduct(data);
             })
     }, [addProductButtonState])
+
+    const changeState=(st)=>{
+        setAddProductButtonState(st)
+    }
 
     return (
         <div>
             {
                 addProductButtonState
                     ?
-                    <AddProductForm />
+                    <AddProductForm changeState={changeState} />
                     :
                     <>
-                        <button onClick={()=>setAddProductButtonState(!addProductButtonState)}>Add New Product</button>
+                        <button className="btn-white my-4" onClick={()=>setAddProductButtonState(!addProductButtonState)}>Add New Product</button>
                         
-                        <div className="card-columns">
+                        <div className="card-columns ">
                             {
                                 allProduct.length>0
                                 ?

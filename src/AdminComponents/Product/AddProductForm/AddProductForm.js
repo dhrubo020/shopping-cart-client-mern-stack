@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import Axios from 'axios';
 import Resizer from 'react-image-file-resizer';
-
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 import './AddProductForm.css'
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
-const AddProductForm = () => {
+const AddProductForm = ({ changeState }) => {
+
+    const notify = () => toast("Product Added to Database");
 
     const history = useHistory();
     const [imageUrl, setImageUrl] = useState('');
@@ -18,16 +21,16 @@ const AddProductForm = () => {
     const { register, handleSubmit, reset, watch, errors } = useForm();
 
     const onSubmit = data => { // form submit
- 
-        if(imageUrl.length === 0){
+
+        if (imageUrl.length === 0) {
             window.alert("Please upload product image.")
             return 0;
         }
         const newProductInfo = { ...data, active: active, imageUrl: imageUrl }
-        console.log(newProductInfo)
+        // console.log(newProductInfo)
         setProductData(newProductInfo)
 
-        fetch('http://localhost:3001/addProduct' , { //----------- post product to db
+        fetch('http://localhost:3001/addProduct', { //----------- post product to db
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newProductInfo)
@@ -35,13 +38,17 @@ const AddProductForm = () => {
             .then(res => res.json())
             .then(data => {
                 if (data) {
-                    window.alert("Item added successfully!")
-                    history.push('/admin')
+                    // window.alert("Item added successfully!")
+                    notify();
+                    setTimeout(() => {
+                        history.push('/admin')
+                    }, 2000)
+
                 } else {
                     window.alert("Else!")
                 }
             })
-        
+
     };
 
 
@@ -92,62 +99,78 @@ const AddProductForm = () => {
 
     return (
 
-        <div>
-            <div className="center my-5 scroll-able">
+        <div >
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={true}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
 
-                <div style={{ marginTop: '200px' }}>
+            <div className="p-2">
+                <button className="btn-white" onClick={() => changeState(false)}>Back</button>
+            </div>
+
+
+            <div className="scroll-able form-bg" style={{ marginLeft: '20%', maxWidth: '300px' }}>
+                <h3 className="text-center">Add new Product</h3>
+                <div style={{ marginTop: '10px' }} >
                     <label>Product Image</label><br />
                     <input onChange={upload} type="file" name="myFile" />
                     <br />
                     {
-                        imageUrl ? <img src={`${imageUrl}`} />  : <small className="text-mute">Image will be appeared here</small>
+                        imageUrl ? <img src={`${imageUrl}`} height="50" alt="" /> : <small className="text-mute">Image will be appeared here</small>
                     }
                     <br />
                 </div>
 
                 < form onSubmit={handleSubmit(onSubmit)} >
 
-                    <div style={{ marginTop: '200px' }}>
+                    <div style={{ marginTop: '20px' }}>
                         <label>Product Name</label><br />
-                        < input name="name" className="form-control-lg" defaultValue="name" ref={register({ required: false })} />
+                        < input name="name" className="form-control-lg" ref={register({ required: false })} required />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div>
                         <label>Product Price (Without Discount)</label><br />
-                        < input name="price" className="form-control-lg " defaultValue="100" ref={register({ required: false })} />
+                        < input name="price" className="form-control-lg " ref={register({ required: false })} required />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div>
                         <label>Discount %</label><br />
-                        < input name="discount" className="form-control-lg" defaultValue="5" ref={register({ required: false })} />
+                        < input name="discount" className="form-control-lg" defaultValue="0" ref={register({ required: false })} />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div>
                         <label>Shipping Charge</label><br />
-                        < input name="shippingCharge" className="form-control-lg" defaultValue="2" ref={register({ required: false })} />
+                        < input name="shippingCharge" className="form-control-lg" defaultValue="0" ref={register({ required: false })} />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div>
                         <label>Color</label><br />
-                        < input name="color" className="form-control-lg" defaultValue="red" ref={register({ required: false })} />
+                        < input name="color" className="form-control-lg" ref={register({ required: false })} />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div>
                         <label>Size</label><br />
-                        < input name="size" className="form-control-lg" defaultValue="XL" ref={register({ required: false })} />
+                        < input name="size" className="form-control-lg" ref={register({ required: false })} />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div >
-                        <br />
                         <label>Active</label>
-                        <div style={{ display: 'inline-block', float: 'right' }} className="custom-control custom-switch" >
+                        <div style={{ display: 'inline-block', float: 'right', paddingRight: '50px' }} className="custom-control custom-switch" >
                             <input type="checkbox" onClick={() => setActive(!active)} className="custom-control-input form-control-lg" id="customSwitch1" />
                             <label className="custom-control-label" for="customSwitch1"></label>
                         </div>
                     </div>
 
                     <br />
-                    <button type="submit">Add Product</button>
+                    <button type="submit" className="btn-yellow"  >Add Product</button>
                 </form >
             </div>
         </div>

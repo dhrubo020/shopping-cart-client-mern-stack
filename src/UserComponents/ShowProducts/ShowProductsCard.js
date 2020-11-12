@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { CartContext } from '../../App';
 import { addToDatabaseCart, getDatabaseCart } from '../../DatabaseManager/DatabaseManager';
 import { discountPrice, updateCartContext } from '../../DatabaseManager/PriceCalculation';
-import ToastMessage from '../ToastMessage/ToastMessage';
 
+import 'react-toastify/dist/ReactToastify.css';
 import './ShowProducts.css'
+import { toast, ToastContainer } from 'react-toastify';
 
 
 const ShowProductsCard = ({ data }) => {
-
+    const notify = () => toast("Product added to cart");
     const [allCartItems, setAllCartItems] = useContext(CartContext);
     const [cartClick, setCartClick] = useState(false)
 
@@ -45,8 +46,8 @@ const ShowProductsCard = ({ data }) => {
         }
         // console.log(getDatabaseCart())
         setAllCartItems(updateCartContext);
-
         setCartClick(!cartClick);
+        notify();
     }
 
     const newDiscountPrice = discountPrice(data.name, data.price, data.discount);
@@ -54,23 +55,36 @@ const ShowProductsCard = ({ data }) => {
 
     return (
         <div>
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={true}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             <div>
                 <div className="card  productbox"
                     onMouseEnter={e => showButton(e)}
                     onMouseLeave={e => hideButton(e)}
                 >
                     <div className={toggle}>
-                        <div className="p-2">
-                            <img src={data.imageUrl} height='100' alt="" />
+                        <div className="p-2 center">
+                            <img src={data.imageUrl} height='200' alt="" />
                         </div>
-                        <p>{data.name}</p>
+                        <h3 className="px-3">{data.name}</h3>
                         <div>
-                            <span>BDT <span style={{ textDecoration: 'line-through' }}>{data.price}</span> {newDiscountPrice}</span>
-                            <span style={{ backgroundColor: 'yellow', float: 'right' }}>{data.discount}%</span>
+                            <span className="px-3">BDT <span style={{ textDecoration: 'line-through' }}>{data.price}</span> {newDiscountPrice}</span>
+                            <span className="p-3" style={{ backgroundColor: 'yellow', float: 'right' }}>{data.discount}%</span>
                         </div>
                     </div>
 
-                    <button onClick={() => handleAddToCart(data._id)} className={displayCartButton}>Add to Cart</button>
+                    <button onClick={() => handleAddToCart(data._id)} className={displayCartButton}>
+                        <span className="btn-yellow">Add to Cart</span>
+                    </button>
                 </div>
 
             </div>

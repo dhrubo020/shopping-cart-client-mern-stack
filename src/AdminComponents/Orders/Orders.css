@@ -1,0 +1,38 @@
+.cancelled:focus{
+    background-color: tomato;
+}
+.confirmed:focus{
+    background-color: rgb(151, 214, 55);
+}
+.pending:focus{
+    background-color: rgb(98, 142, 252);
+}
+.all:focus{
+    background-color: yellow;
+}
+.order-btn{
+    width: 130px;
+    height: 75px;
+   border-radius: 5px;
+   border: 1px solid white;
+   outline: none;
+   margin: 10px 20px;
+ }
+ .order-btn:focus{
+     outline: none;
+ }
+ .cancel{
+     padding: 6px 10px;
+     background-color: tomato;
+     border: none;
+     outline: none;
+     border-radius: 10px;
+ }
+ .confirm{
+    padding: 6px 10px;
+    background-color: rgb(21, 216, 86);
+    border: none;
+     outline: none;
+     border-radius: 10px;
+     margin: 0px 10px;
+}

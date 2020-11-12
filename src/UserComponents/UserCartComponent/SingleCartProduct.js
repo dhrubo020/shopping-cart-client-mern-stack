@@ -10,7 +10,7 @@ const SingleCartProduct = ({ data, changeQuantity, removeItem }) => {
     return (
         <div>
             <div className="container">
-                <div className="row"> 
+                <div className="row bg-white py-3 mb-1"> 
                     <div className="col-md-2">
                         <img src={data.imageUrl} height="70" alt="" />
                     </div>
@@ -19,12 +19,12 @@ const SingleCartProduct = ({ data, changeQuantity, removeItem }) => {
                             <div className="col-md-12">
                                 <div className="d-flex justify-content-between">
                                     <span>{data.name}</span>
-                                    <button onClick={()=>removeItem(data._id)}>Delete</button>
+                                    <span onClick={()=>removeItem(data._id)}><i class="fa fa-trash fa-2x" aria-hidden="true"></i></span>
                                 </div>
                             </div>
                         </div>
                         
-                        <div className="row">
+                        <div className="row ">
                             <div className="col-md-4">
                                 <div className="d-flex justify-content-between">
                                     <span>Color: Red</span>
@@ -41,10 +41,14 @@ const SingleCartProduct = ({ data, changeQuantity, removeItem }) => {
                             <div className="col-md-4">
                                 <div>
                                     <span>
-                                        Quantity:
-                                        <button onClick={()=>changeQuantity(data._id, data.quantity>1 && data.quantity-1)}>-</button>
-                                        <span>{data.quantity}</span>
-                                        <button onClick={()=>changeQuantity(data._id, data.quantity+1)}>+</button>
+                                        Quantity : &nbsp;
+                                        <span onClick={()=>changeQuantity(data._id, data.quantity>1 && data.quantity-1)}>
+                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                        </span>
+                                        <span style={{fontSize:'18px'}}> {data.quantity} </span>
+                                        <span onClick={()=>changeQuantity(data._id, data.quantity+1)}>
+                                        <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                        </span>
                                     
                                     </span> <br/>
                                     
@@ -53,9 +57,10 @@ const SingleCartProduct = ({ data, changeQuantity, removeItem }) => {
                             </div>
                         </div>
                     </div>
+                    <hr/>
                 </div>
             </div>
-            <hr/>
+            
         </div>
     );
 };

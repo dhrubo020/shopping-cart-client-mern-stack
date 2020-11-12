@@ -5,21 +5,21 @@ import './ShowProducts.css';
 
 
 
-const ShowProducts = () => {
+const ShowProducts = ({allProduct}) => {
 
-    const [allProduct, setAllProduct] = useState([])
-    useEffect(() => {
-        fetch(`http://localhost:3001/getAllProduct`)
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                setAllProduct(data);
-            })
-    }, [])
+    // const [allProduct, setAllProduct] = useState([])
+    // useEffect(() => {
+    //     fetch(`http://localhost:3001/getAllProduct`)
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             console.log(data);
+    //             setAllProduct(data);
+    //         })
+    // }, [])
 
     return (
         <div>
-            <div className="card-columns">
+            <div className="card-columns ">
                 {
                     allProduct.length > 0
                         ?

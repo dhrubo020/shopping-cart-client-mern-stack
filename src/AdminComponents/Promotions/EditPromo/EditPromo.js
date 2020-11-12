@@ -4,17 +4,19 @@ import { useLocation } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
-
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 const EditPromo = () => {
+    const notify = () => toast("Promo Code updated");
     let currentLocation = useLocation()
     const loc = currentLocation.pathname
     const id = loc.slice(21, loc.length)
 
     const [formValues, setFormValues] = useState({})
 
-    useEffect(  () => {
-         fetch(`http://localhost:3001/getPromoById/${id}`)
+    useEffect(() => {
+        fetch(`http://localhost:3001/getPromoById/${id}`)
             .then(res => res.json())
             .then(data => {
                 setFormValues(data)
@@ -33,8 +35,8 @@ const EditPromo = () => {
         const promoCodeName = formValues.promoCodeName;
         const startDate = formValues.startDate;
         const id = formValues._id;
-        const codeInfo = { ...data, promoActive, endDate, updatedAt: new Date(), promoCodeName, startDate}
-        const sendData = {id, codeInfo}
+        const codeInfo = { ...data, promoActive, endDate, updatedAt: new Date(), promoCodeName, startDate }
+        const sendData = { id, codeInfo }
 
         if (sendData) {
             console.log(sendData)
@@ -47,7 +49,8 @@ const EditPromo = () => {
                 .then(res => res.json())
                 .then(data => {
                     if (data) {
-                        window.alert("Code updated successfully!")
+                        // window.alert("Code updated successfully!")
+                        notify();
                     } else {
                         window.alert("Something wrong in updating!")
                     }
@@ -57,15 +60,27 @@ const EditPromo = () => {
 
     return (
         <div>
-            <div className="center my-5 scroll-able">
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={true}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+            <div className=" my-5 scroll-able form-bg p-3" style={{ marginLeft: '30%', maxWidth: '300px' }}>
+                <h3 className="text-center">Edit Promo Code</h3>
                 < form onSubmit={handleSubmit(onSubmit)} >
-                    <div style={{ marginTop: '100px' }}>
+                    <div >
                         <label>Promo code</label><br />
-                        <label className="form-control-lg "> {formValues.promoCodeName} </label>
+                        <label className="form-control-sm "> <b>{formValues.promoCodeName}</b> </label>
                     </div>
                     <div>
                         <label>Start Date</label><br />
-                        <label className="form-control-lg "> {formValues && formValues.startDate } </label>
+                        <label className="form-control-sm "> <b>{formValues && formValues.startDate}</b> </label>
                     </div>
                     <div>
                         <label>End Date</label><br />
@@ -79,12 +94,12 @@ const EditPromo = () => {
                     </div>
                     <div>
                         <label>Discount Rate in %</label><br />
-                        < input name="promoDiscount" type="number" className="form-control-lg" defaultValue={formValues.promoDiscount} ref={register({ required: false })} required />
+                        < input name="promoDiscount" type="number" className="form-control-sm" defaultValue={formValues.promoDiscount} ref={register({ required: false })} required />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div>
                         <label>Use Time</label><br />
-                        < input name="useTime" type="number" className="form-control-lg" defaultValue={formValues.useTime} ref={register({ required: false })} required />
+                        < input name="useTime" type="number" className="form-control-sm" defaultValue={formValues.useTime} ref={register({ required: false })} required />
                         {/* {errors.exampleRequired && <><br/><small className="input-warning"> This field is required</small> </> } */}
                     </div>
                     <div >
@@ -97,7 +112,7 @@ const EditPromo = () => {
                     </div>
 
                     <br />
-                    <button type="submit">Update Promo Code</button>
+                    <button type="submit" className="btn-yellow">Update Promo Code</button>
                 </form >
             </div>
         </div>

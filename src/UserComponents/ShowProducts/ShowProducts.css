@@ -1,6 +1,5 @@
 .productbox{
-    display: flex;
-    
+     display: flex;
 }
 
 .notdisplayed  {
@@ -17,8 +16,12 @@
     display: flex;
     height: auto;
     width: auto;
-    margin-left: 30%;
-    margin-top: -30%;
+    margin-left: 35%;
+    margin-top: -40%;
     position: relative;
+    background-color: yellow;
+    border-radius: 10px;
+    border: none;
+    outline: none;
 }
   

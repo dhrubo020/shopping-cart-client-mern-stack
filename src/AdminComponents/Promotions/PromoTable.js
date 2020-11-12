@@ -19,24 +19,24 @@ const PromoTable = ({ serial, data }) => {
     }
     return (
         <div>
-            <div className="mt-3 bg-light">
+            <div className="mt-3 bg-white p-3 mb-2">
                 <div>
                     <div style={{display:'inline-block'}}>
                         <span>{serial+1}</span>
-                        <span> {promoCodeName} </span>
+                        <span className="ml-3"> <b>{promoCodeName}</b>  </span>
                     </div>
                     <div style={{display:'inline-block', float:'right'}}>
                         <Link to={`/admin/editPromoCode/${_id}`}>
-                            <button onClick={()=>goToEditPromoCode(_id)}>Edit</button>
+                            <button className="btn-yellow mr-4" onClick={()=>goToEditPromoCode(_id)}>Edit</button>
                         </Link>
                         
                         <span>
                             {
                                 promoActive === true
                                 ?
-                                <span>Active</span>
+                                <span style={{backgroundColor:'lightgreen',borderRadius:'10px', padding:'5px'}}>Active</span>
                                 :
-                                <span>Deactive</span>
+                                <span style={{backgroundColor:'tomato', borderRadius:'10px', padding:'5px'}}>Deactive</span>
                             }
                         </span>
                     </div>
@@ -44,7 +44,7 @@ const PromoTable = ({ serial, data }) => {
                 <hr/>
                 <div className="d-flex justify-content-between"  >
                         <span>Created At: {createdAt.slice(0,10)} {createdAt.slice(12,19)}</span>
-                        <span>Usages: {usages}</span>
+                        <span>Usages: 4</span>
                         <span>Discount rate: {promoDiscount}%</span>
                         <span>Start Date : {startDate.slice(0,10)}</span>
                         <span>End Date : {endDate.slice(0,10)}</span>

@@ -19,15 +19,15 @@ const Layout = () => {
             <Navbar />
 
             <div className="container-fluid">
-                <div className="row mx-2">
+                <div className="row ">
 
-                    <div className="col-md-2 bg-light">
-                        <Navigation />
+                    <div className="col-md-2 bg-white " style={{ height: '580px' }}>
+                        <div className="p-3">
+                            <Navigation />
+                        </div>
                     </div>
 
                     <div className="col-md-10">
-
-
                         {
                             currentLocation.pathname === '/admin/promotion'
                             &&
@@ -46,10 +46,10 @@ const Layout = () => {
                         {
                             currentLocation.pathname === '/admin'
                             &&
-                            <DisplayProducts/>
+                            <DisplayProducts />
                         }
                         {
-                            currentLocation.pathname.slice(0,16) === '/admin/editPromo'
+                            currentLocation.pathname.slice(0, 16) === '/admin/editPromo'
                             &&
                             <EditPromo />
                         }
